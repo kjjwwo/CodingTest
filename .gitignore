@@ -1,0 +1,38 @@
+# =========================
+# Java
+# =========================
+*.class
+*.jar
+*.war
+*.ear
+
+# Build directories
+bin/
+target/
+build/
+out/
+
+# =========================
+# Eclipse
+# =========================
+.metadata/
+.settings/
+.project
+.classpath
+
+# Eclipse temporary files
+*.launch
+.externalToolBuilders/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs / Temporary files
+# =========================
+*.log
+*.tmp
+*.temp
