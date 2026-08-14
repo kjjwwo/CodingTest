@@ -8,12 +8,12 @@ public class Solution {
     	for (int i = 0; i < N; i++) {
     		String [] tmp = new String[N];
 			tmp = park[i].split("");
-			for (int j = 0; j < tmp.length; j++) {
-				System.out.print(tmp[j]);
-			}
-			System.out.println();
+			parkMap[i] = tmp;
 		}
     	
+    	for (int i = 0; i < parkMap.length; i++) {
+			
+		}
     	
     	
     	int[] answer = {};
