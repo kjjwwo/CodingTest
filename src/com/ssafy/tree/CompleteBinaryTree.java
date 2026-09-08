@@ -106,4 +106,50 @@ public class CompleteBinaryTree<T> {
 			++breadth;
 		}
 	}
+
+	public void dfsByPreOrder() {
+		if(isEmpty()) return;
+		dfsByPreOrder(1);
+	}
+	private void dfsByPreOrder(int current) {
+		// step3. 탐색대상과 해야할 작업 처리하기
+		System.out.println(nodes[current]);
+		// step3-2. 탐색대상과 관계있는 다른 탐색 대상들 큐에 넣기
+		// left child
+		int child = current*2;
+		if(child <= lastIndex) dfsByPreOrder(child);
+		// right child
+		if(child+1 <= lastIndex) dfsByPreOrder(child+1);
+	}
+	
+	public void dfsByInOrder() {
+		if(isEmpty()) return;
+		dfsByInOrder(1);
+	}
+	private void dfsByInOrder(int current) {
+		// step3-2. 탐색대상과 관계있는 다른 탐색 대상들 큐에 넣기
+		// left child
+		int child = current*2;
+		if(child <= lastIndex) dfsByInOrder(child);
+		// step3. 탐색대상과 해야할 작업 처리하기
+		System.out.println(nodes[current]);
+		// right child
+		if(child+1 <= lastIndex) dfsByInOrder(child+1);
+	}
+	
+	public void dfsByPostOrder() {
+		if(isEmpty()) return;
+		dfsByPostOrder(1);
+	}
+	private void dfsByPostOrder(int current) {
+		// step3-2. 탐색대상과 관계있는 다른 탐색 대상들 큐에 넣기
+		// left child
+		int child = current*2;
+		if(child <= lastIndex) dfsByPostOrder(child);
+		// right child
+		if(child+1 <= lastIndex) dfsByPostOrder(child+1);
+		// step3. 탐색대상과 해야할 작업 처리하기
+		System.out.println(nodes[current]);
+	}
+
 }

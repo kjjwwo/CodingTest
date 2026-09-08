@@ -10,6 +10,11 @@ public class CompleteBinaryTest {
 		for (String name : names) {
 			tree.add(name);
 		}
+		System.out.println("=bfs=====================");
 		tree.bfs();
+		System.out.println("=dfs=====================");
+//		tree.dfsByPreOrder();
+//		tree.dfsByInOrder();
+		tree.dfsByPostOrder();
 	}
 }
