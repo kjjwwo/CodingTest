@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 // nPn
 public class PermutationTest {
 	
-	static int N;
+	static int N, totalCnt;
 	static int[] input, numbers;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
@@ -24,12 +24,18 @@ public class PermutationTest {
 			input[i] = Integer.parseInt(st.nextToken());
 		}
 		
+		totalCnt = 0;
+		long start = System.nanoTime();
 		permutation(0,0);
+		long end = System.nanoTime();
+		System.out.println((end-start)/1_000_000_000.0);
+		System.out.println("총 경우의 수 : " + totalCnt);
 	}
 	
 	static void permutation(int cnt, int flag) {
 		if (cnt == N) {
-			System.out.println(Arrays.toString(numbers));
+			totalCnt++;
+//			System.out.println(Arrays.toString(numbers));
 			return;
 		}
 		
@@ -40,6 +46,4 @@ public class PermutationTest {
 			permutation(cnt+1, flag | 1 << i);
 		}
 	}
-
-	
 }
