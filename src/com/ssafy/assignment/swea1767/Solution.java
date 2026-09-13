@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 /**
- * 
  * @author JW
  * 
  * N x N cell
@@ -20,55 +19,55 @@ import java.util.StringTokenizer;
  * 
  * 
  * (완전탐색 - DFS 진행)
- * 프로세서 갯수도 세서 pN에 저장
+ * 프로세서 갯수도 세서 totalProcessorNum에 저장
  * 프로세서의 위치를 미리 저장 pR = new int[12]; pC = new int[12]
  * 
- * dfs(int processorNum, int dis) 프로세스 번호, 총 전선 길이
+ * processorCnt : 현재까지 탐색한 프로세서 수
+ * connectNum : 현재까지 연결한 프로세서 수
+ * 
+ * dfs(int processorCnt, int connectNum, int dis) 프로세스 번호, 총 전선 길이
  * 
  * (종료조건)
- * - 마지막 프로세서까지 연결하면 return + 총 전선 길이를 최소 길이와 비교
- * (재귀)
- * (가지치기)
- * - dis길이가 현재 minDis 보다 크면 return; 더 볼 것도 없음
+ * - 마지막 프로세서까지 연결하면 return 
+ *   + 연결된 프로세서 수가 최대 연결 프로세서(maxConnect)보다 큰거나 같은지 확인 -> 총 전선 길이를 최소 길이와 비교
  * 
+ * (재귀)
  * - 가장자리에 있는지 체크 (inCorner())
- * - 가장 자리면 다음 dfs(processorNum + 1, dis)
+ * - 가장 자리면 다음 dfs(processorCnt + 1, connectNum+1, dis)
  * 
  * - 현재 프로세서에서 갈 수 있는 방향 탐색
  * - 4가지 방향에 대해 직진해봄 (방향도 정의해두자)
- * - 아무것도 안 만나면 해당 선의 길이 더하고 dfs(processorNum + 1, dis + d)
+ * - 아무것도 안 만나면 해당 선의 길이 더하고 dfs(processorCnt + 1, connectNum+1, dis + d)
  * - 만나면 continue하고 다음 방향 탐색
- * (가지치기)
- * - 모든 방향에서 불가하면? flag 값을 두어 모든 방향에서 불가능했는지 확인 -> 그냥 return
- * 
+ * - 연결하지 않는 경우의 수 추가 dfs(processorCnt+1, connectNum, dis)
+ * - 총 4가지 + 1가지 = 5가지 경우의 수
  * 
  * 연산 수가 생각보다 많진 않을 듯
  * 
  * 
- * 완탐에 가지치기 진행 
- * - 특정 상황에서 해당 프로세서가 전원 연결할 경우의 수가 없는 경우
- * - 지금까지 연결한 전선의 길이가 최소값보다 클 경우
- * 
  * 비트마스킹 사용가능? (이건 모르겠음)
  * 4방향 중 탐색 가능한 경우를 숫자로 저장하고 바로 바로 탐색
  * 상 하 좌 우
- *
+ * 
+ * 
  */
 
 public class Solution {
 	
-	private static int M = 12;
+	private static int M = 12; // 문제에 설정된 최대 프로세서 수
 	
-	private static int[][] cellMap;
-	private static int N, pN, maxConnect, minDis;
-
-	private static int[] pR;
-	private static int[] pC;
+	private static int[][] map;
 	
-	// 상하좌우 순서
+	
 	private static int[] dr = {-1, 1, 0, 0};
 	private static int[] dc = {0, 0, -1, 1};
+	
+	private static int N, totalProcessorNum, maxConnect, minDistance;
 
+	private static int[] pCol;
+	private static int[] pRow;
+	
+	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
@@ -77,107 +76,115 @@ public class Solution {
 		for (int tc = 1; tc <= T; tc++) {
 			N = Integer.parseInt(br.readLine());
 			
-			cellMap = new int[N][N];
-			pN = 0;
-			pR = new int[M];
-			pC = new int[M];
-			int pIdx = 0;
+			map = new int[N][N];
+			pRow = new int[M];
+			pCol = new int[M];
 			
-			// cell map 생성
+			int idx = 0;
+			totalProcessorNum = 0;
 			for (int r = 0; r < N; r++) {
 				StringTokenizer st = new StringTokenizer(br.readLine(), " ");
 				for (int c = 0; c < N; c++) {
-					int cell = Integer.parseInt(st.nextToken());
-					cellMap[r][c] = cell;
-					if(cell == 1) {
-						pN++;
-						pR[pIdx] = r;
-						pC[pIdx] = c;
-						pIdx++;
+					map[r][c] = Integer.parseInt(st.nextToken());
+					if(map[r][c] != 0) {
+						totalProcessorNum++;
+						pRow[idx] = r;
+						pCol[idx++] = c;
 					}
 				}
 			}
 			
 			maxConnect = 0;
-			minDis = Integer.MAX_VALUE;
+			minDistance = Integer.MAX_VALUE;
 			dfs(0,0,0);
 			
-			sb.append("#").append(tc).append(" ").append(minDis).append("\n");
-		}// end of test_case
+			sb.append("#").append(tc).append(" ").append(minDistance).append("\n");
+		}// end of tc
 		System.out.print(sb.toString());
 	}// end of main
 
-	private static void dfs(int pNum, int dis, int connected) {
+
+	private static void dfs(int processorCnt, int connectNum, int distance) {
 		// 종료 조건
-		if(pNum == pN) {
-			if(connected == maxConnect) {
-				if(dis < minDis) {
-					minDis = dis;
-				}
-				return;
+		if(processorCnt == totalProcessorNum) {
+			if(connectNum > maxConnect) {
+				maxConnect = connectNum;
+				minDistance = distance;
 			}
-			else {
-				minDis = dis;
-				return;
+			else if(connectNum == maxConnect) {
+				minDistance = Math.min(minDistance, distance);
 			}
+			return;
 		}
 		
-		// 재귀
-		if(isCorner(pR[pNum], pC[pNum])) { // 가장자리에 위치하면 선 연결 필요 없음
-			maxConnect = Math.max(maxConnect, connected+1);
-			dfs(pNum+1, dis, connected+1);
+		// 재귀 탐색
+		// 현재 프로세서 위치
+		int row = pRow[processorCnt];
+		int col = pCol[processorCnt];
+		
+		// 가장자리 체크
+		if(inCorner(row, col)) {
+			dfs(processorCnt+1, connectNum+1, distance);
 		}
 		else {
-			for (int direct = 0; direct < 4; direct++) {
-				int r = pR[pNum];
-				int c = pC[pNum];
-				
-				r += dr[direct];
-				c += dc[direct];
-				// 해당 방향으로 탐지했을 때, 전원 연결 가능한가?
-				boolean flag = true;
-				while(inRange(r,c)) {
-					if(cellMap[r][c] != 0) flag = false;
-					r += dr[direct];
-					c += dc[direct];
-				}
-				// 전원 연결 가능하면 다음 프로세서 탐색, 거리도 추가
-				if(flag) {
-					// 전선 2로 마킹
-					r = pR[pNum] + dr[direct];
-					c = pC[pNum] + dc[direct];
-					int d = 0;
-					while(inRange(r,c)) {
-						d++;
-						cellMap[r][c] = 2;
-						r += dr[direct];
-						c += dc[direct];
-					}
-					// 최대 프로세스 업데이트
-					maxConnect = Math.max(maxConnect, connected+1);
-					dfs(pNum+1, dis + d, connected+1);
-					// 전선 0으로 복귀
-					r = pR[pNum] + dr[direct];
-					c = pC[pNum] + dc[direct];
-					while(inRange(r,c)) {
-						cellMap[r][c] = 0;
-						r += dr[direct];
-						c += dc[direct];
-					}
+			for (int i = 0; i < 4; i++) { // 상하좌우 방향 체크
+				if(checkDirect(i, row, col)) { // 특정 방향으로 전원 열결 가능한지 체크
+					int d = connectDirect(i, row, col); // 전원 열결 가능하다면 map에 전선 표기 및 전선 길이 반환
+					dfs(processorCnt+1, connectNum+1, distance+d);
+					disconnectDirect(i, row, col);
 				}
 			}
+			dfs(processorCnt+1, connectNum, distance);
 		}
-		
-		
 	}
 
-	private static boolean isCorner(int row, int col) {
-		return (row == 0 || row == N-1 || col == 0 || col == N-1); // 이중 하나라도 만족하면 가장자리에 있음
+	// 탐색 종료 후 전선 0으로 제거
+	private static void disconnectDirect(int i, int row, int col) {
+		while(inMap(row+dr[i], col+dc[i])) {
+			row += dr[i];
+			col += dc[i];
+			
+			map[row][col] = 0;
+		}
+		return;
 	}
-	
-	private static boolean inRange(int row, int col) {
-		return (row >= 0 && row < N && col >= 0 &&  col < N); // Map 안에 있는지 확인
+
+	// 연결 가능 확인 후 전선을 2로 map에 표시
+	private static int connectDirect(int i, int row, int col) {
+		int distance = 0;
+		while(inMap(row+dr[i], col+dc[i])) {
+			row += dr[i];
+			col += dc[i];
+			distance++;
+			map[row][col] = 2;
+//			if(map[row][col] != 0) {
+//				System.out.println("Connect ERROR!!!");
+//				return -1;
+//			}
+		}
+		
+		return distance;
 	}
-	
-	
+
+	// 현재 방향으로 전원 연결이 가능한가. 해당 방향으로 0이외의 값이 존재하는가
+	private static boolean checkDirect(int i, int row, int col) {
+		while (inMap(row+dr[i], col+dc[i])) {
+			row += dr[i];
+			col += dc[i];
+			
+			if(map[row][col] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// 현재 좌표가 map 안에 있는가
+	private static boolean inMap(int row, int col) {
+		return (row >= 0) && (row < N) && (col >= 0) && (col < N);
+	}
+	// 현재 좌표가 가장자리에 있는가
+	private static boolean inCorner(int row, int col) {
+		return (row == 0) || (row == N-1) || (col == 0) || (col == N-1);
+	}
 }// end of class
