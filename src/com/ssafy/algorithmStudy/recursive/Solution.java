@@ -1,4 +1,4 @@
-package com.ssafy.recursive;
+package com.ssafy.algorithmStudy.recursive;
 
 /**
  * 재귀함수 구조

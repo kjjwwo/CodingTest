@@ -1,4 +1,4 @@
-package com.ssafy.twopointers;
+package com.ssafy.algorithmStudy.twopointers;
 
 import java.io.BufferedReader;
 import java.io.IOException;

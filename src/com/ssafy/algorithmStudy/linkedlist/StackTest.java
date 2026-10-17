@@ -1,4 +1,4 @@
-package com.ssafy.linkedlist;
+package com.ssafy.algorithmStudy.linkedlist;
 
 public class StackTest {
 	public static void main(String[] args) {

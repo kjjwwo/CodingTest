@@ -1,4 +1,4 @@
-package com.ssafy.tree;
+package com.ssafy.algorithmStudy.tree;
 
 public class CompleteBinaryTest {
 	public static void main(String[] args) {

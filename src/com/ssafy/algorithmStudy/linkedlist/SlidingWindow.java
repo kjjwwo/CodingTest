@@ -1,4 +1,4 @@
-package com.ssafy.linkedlist;
+package com.ssafy.algorithmStudy.linkedlist;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

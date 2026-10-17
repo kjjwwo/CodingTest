@@ -1,4 +1,4 @@
-package com.ssafy.tree;
+package com.ssafy.algorithmStudy.tree;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

@@ -1,4 +1,4 @@
-package com.ssafy.pcs;
+package com.ssafy.algorithmStudy.pcs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
